@@ -30,6 +30,9 @@ module vending_machine_controller (
     wire enough_money;
     wire [3:0] change_value;
 
+    // Calculate updated credit: current credit + inserted coins
+    assign updated_credit = credit_reg + coin_in;
+
 
     vending_comb decision_logic (
         .credit(updated_credit),
