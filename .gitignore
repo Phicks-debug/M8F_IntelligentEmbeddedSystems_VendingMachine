@@ -1,0 +1,8 @@
+*.out
+*vcd
+*edaproject
+logs
+*.dot
+*.png
+*.json
+*_*netlist.v

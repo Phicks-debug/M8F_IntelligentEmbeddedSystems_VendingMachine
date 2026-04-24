@@ -1,25 +1,34 @@
 `timescale 1ns / 1ps
 
-module basic_module (
+module vending_comb (
     input [4:0] credit,
-    input [1:0] selected_items,
-    output valid_selection
-    output enough_money,
-    output [3:0] change_value
+    input [1:0] select_item,
+    output reg valid_selection,
+    output reg enough_money,
+    output reg [3:0] change_value
 );
 
-    // Internal signals
-    reg [7:0] internal_reg;
+    always @(*) begin
+        // Default values to prevent latch inference
+        valid_selection = 1'b0;
+        enough_money = 1'b0;
+        change_value = 4'd0;
 
-    // Main logic
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            internal_reg <= 8'b0;
-            data_out <= 8'b0;
-        end else begin
-            internal_reg <= data_in;
-            data_out <= internal_reg;
-        end
+        case (select_item)
+            2'b01,
+            2'b10: begin // Share the same logic for items 2'b01 and 2'b10
+                valid_selection = 1'b1;
+                if (credit >= 5'd10) begin
+                    enough_money = 1'b1;
+                    change_value = credit - 5'd10;
+                end
+            end
+            default: begin // Default case for invalid selections
+                valid_selection = 1'b0;
+                enough_money = 1'b0;
+                change_value = 4'd0;
+            end
+        endcase
     end
 
 endmodule
