@@ -62,8 +62,8 @@ module tb_vending_machine_controller;
 
     task apply_reset;
         begin
-            reset      = 1'b1;
-            coin_in    = 4'd0;
+            reset       = 1'b1;
+            coin_in     = 4'd0;
             select_item = 2'b00;
 
             @(posedge clk);
