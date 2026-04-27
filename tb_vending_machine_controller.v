@@ -11,6 +11,7 @@ module tb_vending_machine_controller;
     reg reset;
     reg [3:0] coin_in;
     reg [1:0] select_item;
+
     wire dispense_itemA;
     wire dispense_itemB;
     wire [3:0] change;
@@ -30,8 +31,9 @@ module tb_vending_machine_controller;
     always #5 clk = ~clk;
 
     task check;
-        input condition;
+        input          condition;
         input [8*80:1] message;
+
         begin
             if (!condition) begin
                 $display("ERROR: %0s", message);
@@ -43,9 +45,11 @@ module tb_vending_machine_controller;
     task step_cycle;
         input [3:0] test_coin_in;
         input [1:0] test_select_item;
+
         begin
-            coin_in = test_coin_in;
+            coin_in     = test_coin_in;
             select_item = test_select_item;
+
             @(posedge clk);
             #1;
 
@@ -58,9 +62,10 @@ module tb_vending_machine_controller;
 
     task apply_reset;
         begin
-            reset = 1'b1;
-            coin_in = 4'd0;
+            reset      = 1'b1;
+            coin_in    = 4'd0;
             select_item = 2'b00;
+
             @(posedge clk);
             #1;
 
@@ -78,15 +83,15 @@ module tb_vending_machine_controller;
         $dumpfile("tb_vending_machine_controller.vcd");
         $dumpvars(0, tb_vending_machine_controller);
 
-        clk = 1'b0;
-        reset = 1'b0;
-        coin_in = 4'd0;
+        clk         = 1'b0;
+        reset       = 1'b0;
+        coin_in     = 4'd0;
         select_item = 2'b00;
-        errors = 0;
+        errors      = 0;
 
         apply_reset;
 
-        // Test 2: exact payment for Item A
+        // Exact payment for Item A.
         step_cycle(4'd10, 2'b01);
         check(dut.current_state == S_DISPENSE, "exact Item A payment did not enter S_DISPENSE");
         check(dispense_itemA == 1'b1, "Item A was not dispensed on exact payment");
@@ -103,7 +108,7 @@ module tb_vending_machine_controller;
 
         apply_reset;
 
-        // Test 3: exact payment for Item B
+        // Exact payment for Item B.
         step_cycle(4'd10, 2'b10);
         check(dut.current_state == S_DISPENSE, "exact Item B payment did not enter S_DISPENSE");
         check(dispense_itemA == 1'b0, "Item A dispensed during Item B purchase");
@@ -120,7 +125,7 @@ module tb_vending_machine_controller;
 
         apply_reset;
 
-        // Test 4: overpayment
+        // Overpayment returns change after dispensing.
         step_cycle(4'd13, 2'b10);
         check(dut.current_state == S_DISPENSE, "overpayment did not enter S_DISPENSE");
         check(dispense_itemB == 1'b1, "Item B was not dispensed on overpayment");
@@ -136,7 +141,7 @@ module tb_vending_machine_controller;
 
         apply_reset;
 
-        // Test 5: insufficient credit followed by more coins
+        // Insufficient credit followed by more coins.
         step_cycle(4'd6, 2'b01);
         check(dut.current_state == S_WAIT, "insufficient credit should place controller in S_WAIT");
         check(dut.credit_reg == 5'd6, "credit_reg did not store the first partial payment");
@@ -163,7 +168,7 @@ module tb_vending_machine_controller;
 
         apply_reset;
 
-        // Test 6: no selection and invalid selection
+        // No selection and invalid selection keep stored credit.
         step_cycle(4'd10, 2'b00);
         check(dut.current_state == S_WAIT, "no selection with credit should keep controller waiting");
         check(dut.credit_reg == 5'd10, "credit_reg should store credit when no selection is made");
