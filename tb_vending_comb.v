@@ -2,10 +2,10 @@
 
 module tb_vending_comb;
 
-    reg [4:0] credit;
-    reg [1:0] select_item;
-    wire valid_selection;
-    wire enough_money;
+    reg  [4:0] credit;
+    reg  [1:0] select_item;
+    wire       valid_selection;
+    wire       enough_money;
     wire [3:0] change_value;
 
     integer errors;
@@ -19,14 +19,15 @@ module tb_vending_comb;
     );
 
     task check_case;
-        input [4:0] test_credit;
-        input [1:0] test_select_item;
-        input expected_valid_selection;
-        input expected_enough_money;
-        input [3:0] expected_change_value;
+        input [4:0]    test_credit;
+        input [1:0]    test_select_item;
+        input          expected_valid_selection;
+        input          expected_enough_money;
+        input [3:0]    expected_change_value;
         input [8*64:1] test_name;
+
         begin
-            credit = test_credit;
+            credit      = test_credit;
             select_item = test_select_item;
             #1;
 
@@ -54,8 +55,8 @@ module tb_vending_comb;
         $dumpfile("tb_vending_comb.vcd");
         $dumpvars(0, tb_vending_comb);
 
-        errors = 0;
-        credit = 5'd0;
+        errors      = 0;
+        credit      = 5'd0;
         select_item = 2'b00;
 
         check_case(5'd9,  2'b01, 1'b1, 1'b0, 4'd0, "item_a_insufficient_credit");
